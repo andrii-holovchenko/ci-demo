@@ -321,16 +321,21 @@ def check_skip_stage(image, config, title, oneStep, axis) {
         return true
     }
 
-    def customSel = toStringMap(oneStep.get("containerSelector"))
-    if (customSel.size() > 0) {
+    //def customSelList = toStringMap(oneStep.get("containerSelector"))
+    def customSelList = oneStep.get("containerSelector")
 
-        // no match - skip
-        if (!matchMapEntry([customSel], axis)) {
-            config.logger.trace(2, "Step '" + title + "' skipped as no match by containerSelector=" + customSel + " for image with axis=" + axis)
-            return true
+    if (customSelList.size() > 0) {
+        customSelList.each {
+            def customSel = toStringMap(it)
+
+            // no match - skip
+            if (!matchMapEntry([customSel], axis)) {
+                config.logger.trace(2, "Step '" + title + "' skipped as no match by containerSelector=" + customSel + " for image with axis=" + axis)
+                return true
+            }
+
+            config.logger.debug("Step '" + title + "' will use axis=" + axis)
         }
-
-        config.logger.debug("Step '" + title + "' will use axis=" + axis)
 
     } else if (axis['category'] == 'tool') {
             config.logger.trace(2, "Step '" + title + "' skipped for image category=tool")
